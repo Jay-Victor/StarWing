@@ -467,11 +467,13 @@ Add to `UPDATE_CONFIG.mirrors` array in `updater.js`:
 如有任何问题，请通过以下方式联系：
 
 - GitHub Issues: https://github.com/Jay-Victor/StarWing/issues
+- Gitee Issues: https://gitee.com/Jay-Victor/star-wing/issues
 - QQ群：1080243162
 
 If you have any questions, please contact us via:
 
 - GitHub Issues: https://github.com/Jay-Victor/StarWing/issues
+- Gitee Issues: https://gitee.com/Jay-Victor/star-wing/issues
 - QQ Group: 1080243162
 
 ---

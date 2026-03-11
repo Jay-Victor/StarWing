@@ -12,6 +12,7 @@
 [![License](https://img.shields.io/badge/license-Custom%20Open%20Source-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/Jay-Victor/StarWing)
 [![QQ Group](https://img.shields.io/badge/QQ群-1080243162-orange.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=YOUR_QQ_GROUP_KEY)
+[![Gitee](https://img.shields.io/badge/Gitee-StarWing-red.svg)](https://gitee.com/Jay-Victor/star-wing)
 
 [English](#english) | [中文](#中文)
 
@@ -194,10 +195,11 @@ npm run build
 
 查看 [DIRECTORY_STRUCTURE.md](DIRECTORY_STRUCTURE.md) 了解项目目录结构说明。
 
-### �👨‍💻 开发者信息
+### 👨‍💻 开发者信息
 
 - **开发者**: Jay-Victor
 - **GitHub**: https://github.com/Jay-Victor/StarWing
+- **Gitee**: https://gitee.com/Jay-Victor/star-wing
 
 ### 💬 技术交流
 
@@ -434,6 +436,7 @@ See [CHANGELOG.md](CHANGELOG.md) for detailed version updates.
 
 - **Developer**: Jay-Victor
 - **GitHub**: https://github.com/Jay-Victor/StarWing
+- **Gitee**: https://gitee.com/Jay-Victor/star-wing
 
 ### 💬 Community
 

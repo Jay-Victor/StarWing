@@ -207,4 +207,5 @@ StarWing/
 *报告生成时间: 2026-03-08*
 *测试人员: StarWing Build System*
 *版本: 1.0.0*
-*仓库地址: https://github.com/Jay-Victor/StarWing*
+*GitHub: https://github.com/Jay-Victor/StarWing*
+*Gitee: https://gitee.com/Jay-Victor/star-wing*
