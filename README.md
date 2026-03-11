@@ -8,7 +8,7 @@
 
 *支持键盘、鼠标和手势三种操控模式*
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/Jay-Victor/StarWing)
+[![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/Jay-Victor/StarWing)
 [![License](https://img.shields.io/badge/license-Custom%20Open%20Source-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/Jay-Victor/StarWing)
 [![QQ Group](https://img.shields.io/badge/QQ群-1080243162-orange.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=YOUR_QQ_GROUP_KEY)
@@ -220,6 +220,14 @@ npm run build
 </div>
 
 您的支持是我们持续改进的动力！感谢每一位支持者！❤️
+
+#### 💝 打赏名单
+
+感谢以下热心用户的支持（按打赏时间排序）：
+
+| 序号 | 打赏账户 | 打赏日期 | 打赏金额（元） |
+|:---:|:---:|:---:|:---:|
+| 1 | ＨonEy°念 | 2026-03-11 22:17:05 | 20.00 |
 
 ### 📄 开源协议
 
@@ -457,6 +465,14 @@ If you find this project helpful, consider buying the developer a coffee ☕
 </div>
 
 Your support is our motivation to keep improving! Thank you to all supporters! ❤️
+
+#### 💝 Donor List
+
+Thanks to the following supporters (sorted by donation date):
+
+| No. | Donor | Date | Amount (CNY) |
+|:---:|:---:|:---:|:---:|
+| 1 | ＨonEy°念 | 2026-03-11 22:17:05 | 20.00 |
 
 ### 📄 License
 

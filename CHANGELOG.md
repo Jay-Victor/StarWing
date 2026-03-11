@@ -12,6 +12,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.1] - 2026-03-11
+
+### Changed | 变更
+
+#### 中文
+- 📝 **关于对话框更新**
+  - 添加 Gitee 仓库地址
+  - 新增"访问GitHub"和"访问Gitee"两个按钮
+  - 更新版本号为 1.0.1
+- 📄 **文档更新**
+  - 所有文档添加 Gitee 仓库地址
+  - README.md 添加 Gitee 徽章
+
+#### English
+- 📝 **About Dialog Update**
+  - Added Gitee repository URL
+  - Added "Visit GitHub" and "Visit Gitee" buttons
+  - Updated version to 1.0.1
+- 📄 **Documentation Update**
+  - Added Gitee repository URL to all documents
+  - Added Gitee badge to README.md
+
+---
+
 ## [1.0.0] - 2026-03-08
 
 ### Added | 新增
@@ -176,4 +200,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[1.0.1]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.0.1
 [1.0.0]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.0.0
