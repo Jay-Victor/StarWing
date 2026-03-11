@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="description" content="StarWing - 飞机大战 - 一款基于HTML5 Canvas的飞机射击游戏">
+    <meta name="author" content="Jay-Victor">
+    <meta name="theme-color" content="#0078D4">
+    <title>StarWing - 飞机大战</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preload" href="game.js" as="script">
+    <style>
+        :root { color-scheme: dark; }
+        body { 
+            margin: 0; 
+            background: #0a0a1a; 
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            overflow: hidden;
+        }
+        .game-container { 
+            width: 100%; 
+            height: 100vh; 
+            background: #0a0a1a;
+        }
+        #gameCanvas { 
+            display: block; 
+            width: 100%; 
+            height: 100%;
+        }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <main class="game-container" id="gameContainer" role="main" aria-label="游戏主容器" data-game-state="menu">
+        <div class="game-layout" id="gameLayout" data-layout="split">
+            <div class="game-canvas-area" id="gameCanvasArea" role="application" aria-label="游戏区域" data-component="game-canvas">
+                <canvas id="gameCanvas" aria-label="游戏画布" tabindex="0" data-canvas="main"></canvas>
+                
+                <div class="ui-overlay" id="uiOverlay" role="presentation" data-component="ui-overlay">
+                    <section class="start-menu winui-card animate-scale-in" id="startMenu" role="dialog" aria-labelledby="gameTitle" aria-modal="true">
+                        <header>
+                            <h1 id="gameTitle">🛩️ StarWing</h1>
+                            <p class="subtitle">飞机大战 - Airplane Battle Game</p>
+                        </header>
+                        <nav class="button-group" aria-label="游戏模式选择">
+                            <button class="winui-button large" onclick="startGame('keyboard')">
+                                <span>⌨️</span> 键盘模式 (WASD)
+                            </button>
+                            <button class="winui-button large" onclick="startGame('mouse')">
+                                <span>🖱️</span> 鼠标跟随模式
+                            </button>
+                            <button class="winui-button large" onclick="startGame('gesture')">
+                                <span>👆</span> 手势操控模式
+                            </button>
+                            <button class="winui-button secondary" onclick="showSettings()">
+                                <span>⚙️</span> 游戏设置
+                            </button>
+                            <button class="winui-button secondary" onclick="checkForUpdates()">
+                                <span>🔄</span> 检查更新
+                            </button>
+                        </nav>
+                        <aside class="controls-info" aria-label="操作说明">
+                            <h2>📖 游戏指南</h2>
+                            <div class="guide-section">
+                                <h3>🎮 控制方式</h3>
+                                <dl>
+                                    <dt>⌨️ 键盘模式</dt>
+                                    <dd><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移动飞机</dd>
+                                    <dd><kbd>Space</kbd> 发射激光</dd>
+                                    <dt>🖱️ 鼠标模式</dt>
+                                    <dd>移动鼠标控制飞机位置</dd>
+                                    <dd>按住鼠标左键连续射击</dd>
+                                    <dt>👆 手势模式</dt>
+                                    <dd>使用食指移动控制飞机</dd>
+                                    <dd>张开手掌停止射击，握拳自动射击</dd>
+                                </dl>
+                            </div>
+                            <div class="guide-section">
+                                <h3>⚡ 快捷操作</h3>
+                                <dl>
+                                    <dt><kbd>P</kbd></dt>
+                                    <dd>暂停 / 继续游戏</dd>
+                                    <dt><kbd>M</kbd></dt>
+                                    <dd>循环切换控制模式</dd>
+                                    <dt><kbd>G</kbd></dt>
+                                    <dd>切换手势面板显示</dd>
+                                    <dt><kbd>ESC</kbd></dt>
+                                    <dd>返回主菜单</dd>
+                                </dl>
+                            </div>
+                            <div class="guide-section">
+                                <h3>🎯 游戏玩法</h3>
+                                <dl>
+                                    <dt>🎖️ 得分规则</dt>
+                                    <dd>击毁敌机获得10分基础分</dd>
+                                    <dd>连续击杀获得连击加成</dd>
+                                    <dt>📈 等级系统</dt>
+                                    <dd>每30秒自动升级</dd>
+                                    <dd>等级越高，敌机越强</dd>
+                                    <dt>💔 生命值</dt>
+                                    <dd>被敌机或子弹击中会受伤</dd>
+                                    <dd>生命值归零则游戏结束</dd>
+                                </dl>
+                            </div>
+                            <div class="guide-section">
+                                <h3>✨ 特殊道具</h3>
+                                <dl>
+                                    <dt>⚡ 激光升级</dt>
+                                    <dd>提升武器威力（最多3级）</dd>
+                                    <dt>🛡️ 护盾</dt>
+                                    <dd>抵挡一次伤害</dd>
+                                    <dt>⭐ 得分加倍</dt>
+                                    <dd>获得分数翻倍效果</dd>
+                                    <dt>✨ 无敌状态</dt>
+                                    <dd>短暂时间内免受伤害</dd>
+                                </dl>
+                            </div>
+                        </aside>
+                    </section>
+
+                    <header class="game-hud hidden" id="gameHud" role="banner" aria-label="游戏状态" data-component="hud">
+                        <article class="hud-item animate-slide-in" aria-label="得分" data-hud="score">
+                            <div>
+                                <div class="label" id="scoreLabel">得分</div>
+                                <div class="value" id="scoreDisplay" aria-live="polite" aria-labelledby="scoreLabel">0</div>
+                            </div>
+                        </article>
+                        <article class="hud-item health animate-slide-in" aria-label="生命值" data-hud="health">
+                            <div style="width: 100%;">
+                                <div class="label" id="healthLabel">生命值</div>
+                                <div class="health-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-labelledby="healthLabel">
+                                    <div class="health-bar-fill" id="healthBar"></div>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="hud-item animate-slide-in" aria-label="连击数" data-hud="combo">
+                            <div>
+                                <div class="label" id="comboLabel">连击</div>
+                                <div class="value" id="comboDisplay" aria-live="polite" aria-labelledby="comboLabel">0</div>
+                            </div>
+                        </article>
+                        <article class="hud-item animate-slide-in" aria-label="等级" data-hud="level">
+                            <div>
+                                <div class="label" id="levelLabel">等级</div>
+                                <div class="value" id="levelDisplay" aria-live="polite" aria-labelledby="levelLabel">1</div>
+                            </div>
+                        </article>
+                    </header>
+
+                    <aside class="powerup-status-bar hidden" id="powerupStatusBar" aria-label="道具状态" data-component="powerup-status">
+                        <div class="powerup-item" id="shieldStatus" data-powerup="shield">
+                            <span class="powerup-icon">🛡️</span>
+                            <span class="powerup-timer" id="shieldTimer">0.0s</span>
+                        </div>
+                        <div class="powerup-item" id="scoreStatus" data-powerup="score">
+                            <span class="powerup-icon">⭐</span>
+                            <span class="powerup-timer" id="scoreTimer">0.0s</span>
+                        </div>
+                        <div class="powerup-item" id="invincibleStatus" data-powerup="invincible">
+                            <span class="powerup-icon">✨</span>
+                            <span class="powerup-timer" id="invincibleTimer">0.0s</span>
+                        </div>
+                        <div class="powerup-item" id="laserStatus" data-powerup="laser">
+                            <span class="powerup-icon">⚡</span>
+                            <span class="powerup-level" id="laserLevel">x1</span>
+                        </div>
+                    </aside>
+
+                    <aside class="control-mode-indicator hidden animate-slide-in" id="controlMode" aria-live="polite" data-component="control-indicator">
+                        <span>🎮 控制模式:</span>
+                        <span class="mode" id="controlModeText">键盘</span>
+                    </aside>
+
+                    <nav class="mode-switch-btn hidden animate-slide-in" id="modeSwitchBtn" aria-label="控制模式切换">
+                        <div class="btn-label" id="modeSwitchLabel">控制模式</div>
+                        <div class="btn-group" role="radiogroup" aria-labelledby="modeSwitchLabel">
+                            <button class="mode-btn active" data-mode="keyboard" role="radio" aria-checked="true">
+                                <span>⌨️</span> 键盘
+                            </button>
+                            <button class="mode-btn" data-mode="mouse" role="radio" aria-checked="false">
+                                <span>🖱️</span> 鼠标
+                            </button>
+                            <button class="mode-btn" data-mode="gesture" role="radio" aria-checked="false">
+                                <span>👆</span> 手势
+                            </button>
+                        </div>
+                    </nav>
+
+                    <nav class="control-buttons hidden" id="controlButtons" aria-label="游戏控制按钮">
+                        <button class="control-btn" id="pauseBtn" title="暂停 (P)" aria-label="暂停游戏">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                        </button>
+                        <button class="control-btn" id="settingsBtn" title="设置" aria-label="打开设置" aria-haspopup="dialog">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        </button>
+                    </nav>
+
+                    <div class="pause-indicator" id="pauseIndicator" role="alertdialog" aria-modal="true" aria-labelledby="pauseTitle" aria-describedby="pauseDesc">
+                        <h3 id="pauseTitle">⏸️ 游戏暂停</h3>
+                        <p id="pauseDesc">按 <kbd>P</kbd> 继续游戏</p>
+                    </div>
+
+                    <div class="combo-display" id="comboDisplayContainer" aria-live="assertive" aria-atomic="true">
+                        <div class="combo-text" id="comboText"></div>
+                    </div>
+
+                    <section class="game-over-screen" id="gameOverScreen" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle">
+                        <div class="game-over-content winui-card elevated animate-scale-in">
+                            <header>
+                                <h2 id="gameOverTitle">💥 游戏结束</h2>
+                            </header>
+                            <div class="final-score">最终得分: <span id="finalScore" aria-live="polite">0</span></div>
+                            <div class="stats" role="list" aria-label="游戏统计">
+                                <article class="stat-item" role="listitem">
+                                    <div class="stat-label">🎯 击中目标</div>
+                                    <div class="stat-value" id="finalHits">0</div>
+                                </article>
+                                <article class="stat-item" role="listitem">
+                                    <div class="stat-label">🔥 最高连击</div>
+                                    <div class="stat-value" id="finalMaxCombo">0</div>
+                                </article>
+                                <article class="stat-item" role="listitem">
+                                    <div class="stat-label">⏱️ 游戏时长</div>
+                                    <div class="stat-value" id="finalTime">0s</div>
+                                </article>
+                                <article class="stat-item" role="listitem">
+                                    <div class="stat-label">⭐ 达到等级</div>
+                                    <div class="stat-value" id="finalLevel">1</div>
+                                </article>
+                            </div>
+                            <nav class="button-group" aria-label="游戏结束选项">
+                                <button class="winui-button large success" onclick="restartGame()">
+                                    <span>🔄</span> 重新开始
+                                </button>
+                                <button class="winui-button secondary large" onclick="returnToMenu()">
+                                    <span>🏠</span> 返回主菜单
+                                </button>
+                            </nav>
+                        </div>
+                    </section>
+
+                    <section class="settings-panel winui-card elevated hidden animate-scale-in" id="settingsPanel" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+                        <header>
+                            <h3 id="settingsTitle">⚙️ 游戏设置</h3>
+                        </header>
+                        <div class="settings-row">
+                            <label for="soundToggle">🔊 音效</label>
+                            <button class="winui-toggle active" id="soundToggle" onclick="toggleSound()" role="switch" aria-checked="true" aria-label="音效开关"></button>
+                        </div>
+                        <div class="settings-row">
+                            <label for="volumeSlider">🔈 音量</label>
+                            <input type="range" class="winui-slider" id="volumeSlider" min="0" max="100" value="70" onchange="changeVolume(this.value)" aria-label="音量调节">
+                        </div>
+                        <div class="settings-row">
+                            <label for="autoShootToggle">🔫 自动射击 (鼠标模式)</label>
+                            <button class="winui-toggle" id="autoShootToggle" onclick="toggleAutoShoot()" role="switch" aria-checked="false" aria-label="自动射击开关"></button>
+                        </div>
+                        <div class="settings-row">
+                            <label for="gestureToggle">👆 手势操控</label>
+                            <button class="winui-toggle" id="gestureToggle" onclick="toggleGestureControl()" role="switch" aria-checked="false" aria-label="手势操控开关"></button>
+                        </div>
+                        <div class="settings-row">
+                            <label for="gestureSensitivitySlider">🎯 手势灵敏度</label>
+                            <input type="range" class="winui-slider" id="gestureSensitivitySlider" min="1" max="10" value="5" onchange="changeGestureSensitivity(this.value)" aria-label="手势灵敏度调节">
+                        </div>
+                        <div class="settings-row">
+                            <label for="smoothingSlider">📐 平滑系数</label>
+                            <input type="range" class="winui-slider" id="smoothingSlider" min="1" max="10" value="5" onchange="changeSmoothing(this.value)" aria-label="平滑系数调节">
+                        </div>
+                        <footer style="margin-top: 24px; display: flex; gap: 12px;">
+                            <button class="winui-button" onclick="hideSettings()">确定</button>
+                        </footer>
+                    </section>
+
+                    <div class="notification-toast" id="notificationToast" role="alert" aria-live="assertive" aria-atomic="true">
+                        <span class="toast-icon"></span>
+                        <span class="toast-message"></span>
+                    </div>
+                </div>
+            </div>
+            
+            <aside class="side-panel-area" id="sidePanel" data-component="gesture-panel-container">
+                <div class="gesture-panel" id="gesturePanel" role="complementary" aria-label="手势操控面板" data-component="gesture" data-gesture-active="false">
+                    <header class="gesture-panel-header">
+                        <span class="gesture-panel-title">👆 手势操控</span>
+                        <button class="gesture-close-btn" onclick="cycleGesturePanelMode()" title="切换面板模式" aria-label="切换面板显示模式">⤡</button>
+                    </header>
+                    <div class="camera-container" data-component="camera">
+                        <video id="gestureVideo" class="gesture-video" autoplay playsinline aria-label="摄像头视频流" data-video="gesture"></video>
+                        <canvas id="gestureCanvas" class="gesture-canvas" aria-hidden="true" data-canvas="gesture-overlay"></canvas>
+                        <div class="camera-overlay" id="cameraOverlay" role="button" tabindex="0" onclick="toggleGestureCamera()" onkeydown="if(event.key==='Enter')toggleGestureCamera()" aria-label="点击开启摄像头" data-action="toggle-camera">
+                            <div class="camera-placeholder">
+                                <span class="camera-icon">📷</span>
+                                <span>点击开启摄像头</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="gesture-status" role="status" aria-live="polite" data-component="gesture-status">
+                        <div class="status-item" data-status="connection">
+                            <span class="status-label">状态</span>
+                            <span class="status-value" id="gestureStatusText">未激活</span>
+                        </div>
+                        <div class="status-item" data-status="confidence">
+                            <span class="status-label">置信度</span>
+                            <span class="status-value" id="gestureConfidence">0%</span>
+                        </div>
+                        <div class="status-item" data-status="fps">
+                            <span class="status-label">FPS</span>
+                            <span class="status-value" id="gestureFps">0</span>
+                        </div>
+                        <div class="status-item" data-status="firing">
+                            <span class="status-label">射击状态</span>
+                            <span class="status-value active" id="gestureFiringStatus">自动射击</span>
+                        </div>
+                    </div>
+                    <div class="gesture-indicator" id="gestureIndicator" aria-label="手指位置指示器" data-component="finger-tracker">
+                        <div class="indicator-ring"></div>
+                        <div class="indicator-dot" id="fingerDot"></div>
+                        <div class="firing-indicator" id="firingIndicator"></div>
+                    </div>
+                    <button class="winui-button small gesture-toggle-btn" id="gestureToggleBtn" onclick="toggleGestureCamera()" data-action="toggle-camera">
+                        <span id="gestureToggleText">开启摄像头</span>
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </main>
+    <script>
+        window.mediapipeLoaded = false;
+        window.loadMediaPipe = function() {
+            if (window.mediapipeLoaded) return Promise.resolve();
+            return new Promise((resolve, reject) => {
+                const scripts = [
+                    'https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js',
+                    'https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js',
+                    'https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js'
+                ];
+                let loaded = 0;
+                scripts.forEach(src => {
+                    const script = document.createElement('script');
+                    script.src = src;
+                    script.crossOrigin = 'anonymous';
+                    script.onload = () => {
+                        loaded++;
+                        if (loaded === scripts.length) {
+                            window.mediapipeLoaded = true;
+                            console.log('[StarWing] MediaPipe libraries loaded');
+                            resolve();
+                        }
+                    };
+                    script.onerror = (e) => {
+                        console.error('[StarWing] Failed to load:', src, e);
+                        reject(new Error('Failed to load MediaPipe: ' + src));
+                    };
+                    document.head.appendChild(script);
+                });
+            });
+        };
+    </script>
+    <script src="game.js"></script>
+</body>
+</html>

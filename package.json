@@ -1,0 +1,86 @@
+{
+  "name": "starwing",
+  "productName": "StarWing",
+  "version": "1.0.0",
+  "description": "飞机大战 - 一款基于HTML5 Canvas的飞机射击游戏，支持键盘、鼠标和手势操控",
+  "main": "src/main.js",
+  "author": "Jay-Victor",
+  "license": "MIT",
+  "homepage": "https://github.com/Jay-Victor/StarWing#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Jay-Victor/StarWing.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Jay-Victor/StarWing/issues"
+  },
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --enable-logging",
+    "build": "electron-builder --win --x64",
+    "build:dir": "electron-builder --win --x64 --dir",
+    "build:all": "electron-builder --win --x64 --publish always",
+    "publish": "electron-builder --win --x64 --publish always"
+  },
+  "build": {
+    "appId": "com.starwing.game",
+    "productName": "StarWing",
+    "copyright": "Copyright © 2026 Jay-Victor",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "src/**/*",
+      "assets/**/*",
+      "!src/updaterUI.html",
+      "!src/updaterPreload.js"
+    ],
+    "extraResources": [
+      {
+        "from": "src/updaterUI.html",
+        "to": "updaterUI.html"
+      },
+      {
+        "from": "src/updaterPreload.js",
+        "to": "updaterPreload.js"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ],
+      "icon": "assets/logo/logo.ico",
+      "artifactName": "${productName}-${version}-Setup.${ext}",
+      "publish": {
+        "provider": "github",
+        "owner": "Jay-Victor",
+        "repo": "StarWing",
+        "releaseType": "release"
+      }
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "assets/logo/logo.ico",
+      "uninstallerIcon": "assets/logo/logo.ico",
+      "installerHeaderIcon": "assets/logo/logo.ico",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "StarWing",
+      "include": "build/installer.nsh",
+      "deleteAppDataOnUninstall": false
+    },
+    "electronDownload": {
+      "mirror": "https://npmmirror.com/mirrors/electron/"
+    }
+  },
+  "devDependencies": {
+    "electron": "^28.1.0",
+    "electron-builder": "^24.9.1"
+  }
+}

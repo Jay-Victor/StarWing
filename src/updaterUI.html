@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StarWing 更新</title>
+    <style>
+        :root {
+            --winui-accent: #0078D4;
+            --winui-accent-light: #429CE3;
+            --winui-accent-hover: #106EBE;
+            --winui-bg-primary: #0a0a1a;
+            --winui-bg-secondary: #12122a;
+            --winui-bg-tertiary: #1a1a3a;
+            --winui-bg-overlay: rgba(10, 10, 26, 0.95);
+            --winui-text-primary: #FFFFFF;
+            --winui-text-secondary: #C0C0E0;
+            --winui-text-tertiary: #9090B0;
+            --winui-border: #3a3a6a;
+            --winui-success: #107C10;
+            --winui-warning: #FFB900;
+            --winui-error: #D13438;
+            --winui-info: #00BCF2;
+            --winui-radius-medium: 8px;
+            --winui-radius-large: 12px;
+            --winui-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: transparent;
+            color: var(--winui-text-primary);
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .update-container {
+            width: 100vw;
+            height: 100vh;
+            background: var(--winui-bg-overlay);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--winui-border);
+            border-radius: var(--winui-radius-large);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--winui-border);
+            -webkit-app-region: drag;
+        }
+
+        .title-bar-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .title-bar-title .icon {
+            font-size: 20px;
+        }
+
+        .title-bar-controls {
+            display: flex;
+            gap: 8px;
+            -webkit-app-region: no-drag;
+        }
+
+        .title-bar-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            color: var(--winui-text-secondary);
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+
+        .title-bar-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--winui-text-primary);
+        }
+
+        .title-bar-btn.close:hover {
+            background: var(--winui-error);
+        }
+
+        .content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .version-info {
+            display: flex;
+            gap: 24px;
+            align-items: stretch;
+        }
+
+        .version-card {
+            flex: 1;
+            background: var(--winui-bg-tertiary);
+            border: 1px solid var(--winui-border);
+            border-radius: var(--winui-radius-medium);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .version-card.current {
+            border-color: var(--winui-info);
+        }
+
+        .version-card.latest {
+            border-color: var(--winui-success);
+            background: linear-gradient(135deg, rgba(16, 124, 16, 0.1) 0%, var(--winui-bg-tertiary) 100%);
+        }
+
+        .version-label {
+            font-size: 12px;
+            color: var(--winui-text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .version-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--winui-text-primary);
+        }
+
+        .version-card.latest .version-number {
+            color: var(--winui-success);
+        }
+
+        .version-meta {
+            font-size: 12px;
+            color: var(--winui-text-secondary);
+            margin-top: 8px;
+        }
+
+        .arrow-icon {
+            display: flex;
+            align-items: center;
+            font-size: 24px;
+            color: var(--winui-accent);
+        }
+
+        .changelog-section {
+            background: var(--winui-bg-secondary);
+            border: 1px solid var(--winui-border);
+            border-radius: var(--winui-radius-medium);
+            padding: 20px;
+        }
+
+        .changelog-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .changelog-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .changelog-content {
+            max-height: 180px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.8;
+            color: var(--winui-text-secondary);
+            padding-right: 8px;
+        }
+
+        .changelog-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .changelog-content::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .changelog-content::-webkit-scrollbar-thumb {
+            background: rgba(0, 120, 212, 0.3);
+            border-radius: 3px;
+        }
+
+        .changelog-content h1, .changelog-content h2, .changelog-content h3 {
+            color: var(--winui-text-primary);
+            margin: 12px 0 8px 0;
+        }
+
+        .changelog-content h1 { font-size: 18px; }
+        .changelog-content h2 { font-size: 16px; }
+        .changelog-content h3 { font-size: 14px; }
+
+        .changelog-content a {
+            color: var(--winui-accent-light);
+            text-decoration: none;
+        }
+
+        .changelog-content a:hover {
+            text-decoration: underline;
+        }
+
+        .changelog-content li {
+            margin-left: 20px;
+            margin-bottom: 4px;
+        }
+
+        .download-section {
+            background: var(--winui-bg-secondary);
+            border: 1px solid var(--winui-border);
+            border-radius: var(--winui-radius-medium);
+            padding: 20px;
+        }
+
+        .download-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .download-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .download-info {
+            font-size: 12px;
+            color: var(--winui-text-tertiary);
+        }
+
+        .mirror-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .mirror-btn {
+            flex: 1;
+            padding: 12px;
+            background: var(--winui-bg-tertiary);
+            border: 1px solid var(--winui-border);
+            border-radius: var(--winui-radius-medium);
+            color: var(--winui-text-primary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mirror-btn:hover {
+            border-color: var(--winui-accent);
+            background: rgba(0, 120, 212, 0.1);
+        }
+
+        .mirror-btn.active {
+            border-color: var(--winui-accent);
+            background: rgba(0, 120, 212, 0.2);
+        }
+
+        .mirror-btn .name {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .mirror-btn .speed {
+            font-size: 11px;
+            color: var(--winui-text-tertiary);
+        }
+
+        .progress-container {
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--winui-bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--winui-accent) 0%, var(--winui-accent-light) 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--winui-text-secondary);
+        }
+
+        .progress-percent {
+            font-weight: 600;
+            color: var(--winui-accent-light);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: auto;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: var(--winui-radius-medium);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--winui-accent) 0%, var(--winui-accent-hover) 100%);
+            color: var(--winui-text-primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 120, 212, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: var(--winui-bg-tertiary);
+            color: var(--winui-text-tertiary);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: var(--winui-bg-tertiary);
+            color: var(--winui-text-primary);
+            border: 1px solid var(--winui-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--winui-bg-secondary);
+            border-color: var(--winui-accent);
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 12px;
+            border-radius: var(--winui-radius-medium);
+            font-size: 13px;
+            margin-top: 12px;
+        }
+
+        .status-message.success {
+            background: rgba(16, 124, 16, 0.2);
+            color: var(--winui-success);
+            border: 1px solid var(--winui-success);
+        }
+
+        .status-message.error {
+            background: rgba(209, 52, 56, 0.2);
+            color: var(--winui-error);
+            border: 1px solid var(--winui-error);
+        }
+
+        .status-message.info {
+            background: rgba(0, 188, 242, 0.2);
+            color: var(--winui-info);
+            border: 1px solid var(--winui-info);
+        }
+
+        .settings-section {
+            background: var(--winui-bg-secondary);
+            border: 1px solid var(--winui-border);
+            border-radius: var(--winui-radius-medium);
+            padding: 16px;
+        }
+
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .settings-label {
+            font-size: 13px;
+            color: var(--winui-text-primary);
+        }
+
+        .toggle {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--winui-bg-primary);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 2px solid var(--winui-border);
+        }
+
+        .toggle.active {
+            background: var(--winui-accent);
+            border-color: var(--winui-accent);
+        }
+
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.15s ease;
+        }
+
+        .toggle.active::after {
+            transform: translateX(20px);
+        }
+
+        .opacity-slider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slider {
+            flex: 1;
+            height: 4px;
+            background: var(--winui-bg-primary);
+            border-radius: 2px;
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--winui-accent);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider-value {
+            font-size: 12px;
+            color: var(--winui-text-secondary);
+            min-width: 40px;
+            text-align: right;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="update-container" id="updateContainer">
+        <div class="title-bar">
+            <div class="title-bar-title">
+                <span class="icon">🔄</span>
+                <span>StarWing 更新检测</span>
+            </div>
+            <div class="title-bar-controls">
+                <button class="title-bar-btn" id="minimizeBtn" title="最小化">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                        <rect y="5" width="12" height="2"/>
+                    </svg>
+                </button>
+                <button class="title-bar-btn close" id="closeBtn" title="关闭">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+                        <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="version-info" id="versionInfo">
+                <div class="version-card current">
+                    <div class="version-label">当前版本</div>
+                    <div class="version-number" id="currentVersion">1.0.0</div>
+                    <div class="version-meta">已安装</div>
+                </div>
+                <div class="arrow-icon">→</div>
+                <div class="version-card latest">
+                    <div class="version-label">最新版本</div>
+                    <div class="version-number" id="latestVersion">1.0.0</div>
+                    <div class="version-meta" id="releaseDate">-</div>
+                </div>
+            </div>
+
+            <div class="changelog-section">
+                <div class="changelog-header">
+                    <div class="changelog-title">📝 更新内容</div>
+                    <a href="#" id="releaseLink" target="_blank" style="font-size: 12px; color: var(--winui-accent-light);">查看完整发布说明 →</a>
+                </div>
+                <div class="changelog-content" id="changelogContent">
+                    正在加载更新内容...
+                </div>
+            </div>
+
+            <div class="download-section" id="downloadSection">
+                <div class="download-header">
+                    <div class="download-title">📥 下载更新</div>
+                    <div class="download-info" id="fileInfo">-</div>
+                </div>
+                <div class="mirror-selector" id="mirrorSelector">
+                    <button class="mirror-btn active" data-mirror="github">
+                        <span class="name">🌍 GitHub</span>
+                        <span class="speed">官方源</span>
+                    </button>
+                    <button class="mirror-btn" data-mirror="gitee">
+                        <span class="name">🇨🇳 Gitee镜像</span>
+                        <span class="speed">国内加速</span>
+                    </button>
+                    <button class="mirror-btn" data-mirror="cdn">
+                        <span class="name">⚡ CDN</span>
+                        <span class="speed">备用源</span>
+                    </button>
+                </div>
+                <div class="progress-container hidden" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-percent" id="progressPercent">0%</span>
+                        <span id="progressSpeed">-</span>
+                        <span id="progressSize">-</span>
+                    </div>
+                </div>
+                <div class="status-message hidden" id="statusMessage"></div>
+            </div>
+
+            <div class="settings-section">
+                <div class="settings-row">
+                    <span class="settings-label">自动检测更新</span>
+                    <div class="toggle active" id="autoCheckToggle"></div>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label">窗口透明度</span>
+                    <div class="opacity-slider">
+                        <input type="range" class="slider" id="opacitySlider" min="50" max="100" value="95">
+                        <span class="slider-value" id="opacityValue">95%</span>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-label">自动关闭延迟</span>
+                    <div class="opacity-slider">
+                        <input type="range" class="slider" id="autoCloseSlider" min="0" max="120" value="30">
+                        <span class="slider-value" id="autoCloseValue">30秒</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary" id="laterBtn">
+                    <span>⏰</span> 稍后提醒
+                </button>
+                <button class="btn btn-primary" id="downloadBtn">
+                    <span>📥</span> 立即更新
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let updateInfo = null;
+        let selectedMirror = 'github';
+        let downloadedFilePath = null;
+        let autoCloseTimer = null;
+
+        const elements = {
+            currentVersion: document.getElementById('currentVersion'),
+            latestVersion: document.getElementById('latestVersion'),
+            releaseDate: document.getElementById('releaseDate'),
+            changelogContent: document.getElementById('changelogContent'),
+            releaseLink: document.getElementById('releaseLink'),
+            fileInfo: document.getElementById('fileInfo'),
+            mirrorSelector: document.getElementById('mirrorSelector'),
+            progressContainer: document.getElementById('progressContainer'),
+            progressFill: document.getElementById('progressFill'),
+            progressPercent: document.getElementById('progressPercent'),
+            progressSpeed: document.getElementById('progressSpeed'),
+            progressSize: document.getElementById('progressSize'),
+            statusMessage: document.getElementById('statusMessage'),
+            downloadBtn: document.getElementById('downloadBtn'),
+            laterBtn: document.getElementById('laterBtn'),
+            closeBtn: document.getElementById('closeBtn'),
+            minimizeBtn: document.getElementById('minimizeBtn'),
+            autoCheckToggle: document.getElementById('autoCheckToggle'),
+            opacitySlider: document.getElementById('opacitySlider'),
+            opacityValue: document.getElementById('opacityValue'),
+            autoCloseSlider: document.getElementById('autoCloseSlider'),
+            autoCloseValue: document.getElementById('autoCloseValue'),
+            updateContainer: document.getElementById('updateContainer')
+        };
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function formatSpeed(bytesPerSecond) {
+            return formatBytes(bytesPerSecond) + '/s';
+        }
+
+        function showStatus(message, type) {
+            elements.statusMessage.textContent = message;
+            elements.statusMessage.className = `status-message ${type}`;
+            elements.statusMessage.classList.remove('hidden');
+        }
+
+        function hideStatus() {
+            elements.statusMessage.classList.add('hidden');
+        }
+
+        function startAutoCloseTimer(seconds) {
+            if (seconds <= 0) return;
+            
+            let remaining = seconds;
+            autoCloseTimer = setInterval(() => {
+                remaining--;
+                if (remaining <= 0) {
+                    clearInterval(autoCloseTimer);
+                    if (window.updateAPI) {
+                        window.updateAPI.closeWindow();
+                    }
+                }
+            }, 1000);
+        }
+
+        function stopAutoCloseTimer() {
+            if (autoCloseTimer) {
+                clearInterval(autoCloseTimer);
+                autoCloseTimer = null;
+            }
+        }
+
+        if (window.updateAPI) {
+            window.updateAPI.onUpdateInfo((info) => {
+                updateInfo = info;
+                
+                elements.currentVersion.textContent = info.currentVersion;
+                elements.latestVersion.textContent = info.latestVersion;
+                
+                if (info.releaseInfo) {
+                    const date = new Date(info.releaseInfo.releaseDate);
+                    elements.releaseDate.textContent = `发布于 ${date.toLocaleDateString('zh-CN')}`;
+                    elements.changelogContent.innerHTML = info.releaseInfo.changelog || '暂无更新说明';
+                    elements.releaseLink.href = info.releaseInfo.releaseUrl || '#';
+                    
+                    if (info.releaseInfo.fileSize) {
+                        elements.fileInfo.textContent = `文件大小: ${formatBytes(info.releaseInfo.fileSize)}`;
+                    }
+                }
+            });
+
+            window.updateAPI.onDownloadProgress((progress) => {
+                elements.progressFill.style.width = `${progress.progress}%`;
+                elements.progressPercent.textContent = `${progress.progress}%`;
+                elements.progressSpeed.textContent = formatSpeed(progress.speed);
+                elements.progressSize.textContent = `${formatBytes(progress.downloadedBytes)} / ${formatBytes(progress.totalBytes)}`;
+            });
+        }
+
+        elements.mirrorSelector.addEventListener('click', (e) => {
+            const btn = e.target.closest('.mirror-btn');
+            if (btn) {
+                document.querySelectorAll('.mirror-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedMirror = btn.dataset.mirror;
+            }
+        });
+
+        elements.downloadBtn.addEventListener('click', async () => {
+            if (downloadedFilePath) {
+                showStatus('正在启动安装程序...', 'info');
+                try {
+                    if (window.updateAPI) {
+                        await window.updateAPI.installUpdate(downloadedFilePath);
+                    }
+                } catch (error) {
+                    showStatus('安装失败: ' + error.message, 'error');
+                }
+                return;
+            }
+
+            stopAutoCloseTimer();
+            elements.downloadBtn.disabled = true;
+            elements.downloadBtn.innerHTML = '<div class="spinner"></div> 下载中...';
+            elements.progressContainer.classList.remove('hidden');
+            hideStatus();
+
+            try {
+                const modifiedReleaseInfo = {
+                    ...updateInfo.releaseInfo,
+                    source: selectedMirror
+                };
+                
+                if (window.updateAPI) {
+                    downloadedFilePath = await window.updateAPI.downloadUpdate(modifiedReleaseInfo);
+                }
+                
+                showStatus('下载完成！点击"立即更新"开始安装', 'success');
+                elements.downloadBtn.disabled = false;
+                elements.downloadBtn.innerHTML = '<span>🔄</span> 立即更新';
+            } catch (error) {
+                showStatus('下载失败: ' + error.message, 'error');
+                elements.downloadBtn.disabled = false;
+                elements.downloadBtn.innerHTML = '<span>📥</span> 重试下载';
+            }
+        });
+
+        elements.laterBtn.addEventListener('click', () => {
+            if (window.updateAPI) {
+                window.updateAPI.later();
+            }
+        });
+
+        elements.closeBtn.addEventListener('click', () => {
+            if (window.updateAPI) {
+                window.updateAPI.closeWindow();
+            }
+        });
+
+        elements.minimizeBtn.addEventListener('click', () => {
+            if (window.updateAPI) {
+                window.updateAPI.minimizeWindow();
+            }
+        });
+
+        elements.autoCheckToggle.addEventListener('click', async () => {
+            elements.autoCheckToggle.classList.toggle('active');
+            if (window.updateAPI) {
+                const config = await window.updateAPI.getConfig();
+                config.autoCheckEnabled = elements.autoCheckToggle.classList.contains('active');
+                await window.updateAPI.setConfig(config);
+            }
+        });
+
+        elements.opacitySlider.addEventListener('input', (e) => {
+            const value = e.target.value;
+            elements.opacityValue.textContent = `${value}%`;
+            elements.updateContainer.style.opacity = value / 100;
+        });
+
+        elements.autoCloseSlider.addEventListener('input', async (e) => {
+            const value = parseInt(e.target.value);
+            elements.autoCloseValue.textContent = value === 0 ? '禁用' : `${value}秒`;
+            
+            if (window.updateAPI) {
+                const config = await window.updateAPI.getConfig();
+                config.autoCloseDelay = value;
+                await window.updateAPI.setConfig(config);
+            }
+        });
+
+        (async () => {
+            if (window.updateAPI) {
+                const config = await window.updateAPI.getConfig();
+                
+                elements.autoCheckToggle.classList.toggle('active', config.autoCheckEnabled);
+                elements.opacitySlider.value = config.windowOpacity || 95;
+                elements.opacityValue.textContent = `${elements.opacitySlider.value}%`;
+                elements.autoCloseSlider.value = config.autoCloseDelay || 30;
+                elements.autoCloseValue.textContent = elements.autoCloseSlider.value === '0' ? '禁用' : `${elements.autoCloseSlider.value}秒`;
+                
+                elements.updateContainer.style.opacity = elements.opacitySlider.value / 100;
+                
+                if (config.autoCloseDelay > 0) {
+                    startAutoCloseTimer(config.autoCloseDelay);
+                }
+            }
+        })();
+    </script>
+</body>
+</html>
