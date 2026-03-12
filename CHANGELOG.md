@@ -12,6 +12,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.2] - 2026-03-12
+
+### Changed | 变更
+
+#### 中文
+- 📥 **下载源优化**
+  - 更新下载源配置，支持 GitHub 直连和 Gitee 直连
+  - 优化国内用户更新下载速度
+  - README.md 添加双平台下载链接
+- 📄 **文档更新**
+  - 添加 GitHub 和 Gitee 双平台 Releases 下载链接
+  - 更新常见问题中的下载失败解决方案
+
+#### English
+- 📥 **Download Source Optimization**
+  - Updated download source configuration with GitHub and Gitee direct links
+  - Improved download speed for users in China
+  - Added dual-platform download links in README.md
+- 📄 **Documentation Update**
+  - Added GitHub and Gitee Releases download links
+  - Updated FAQ for download failure solutions
+
+---
+
 ## [1.0.1] - 2026-03-11
 
 ### Changed | 变更
@@ -200,5 +224,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[1.0.2]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.0.2
 [1.0.1]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.0.1
 [1.0.0]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.0.0

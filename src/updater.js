@@ -7,8 +7,9 @@ const crypto = require('crypto');
 const { URL } = require('url');
 
 const GITHUB_REPO = 'Jay-Victor/StarWing';
+const GITEE_REPO = 'Jay-Victor/star-wing';
 const GITHUB_API_URL = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
-const GITEE_MIRROR_URL = `https://gitee.com/api/v5/repos/${GITHUB_REPO}/releases/latest`;
+const GITEE_API_URL = `https://gitee.com/api/v5/repos/${GITEE_REPO}/releases/latest`;
 
 const UPDATE_CONFIG = {
     checkInterval: 24 * 60 * 60 * 1000,
@@ -22,7 +23,7 @@ const UPDATE_CONFIG = {
     retryDelay: 5000,
     mirrors: [
         { name: 'GitHub', type: 'github', priority: 1 },
-        { name: 'Gitee镜像', type: 'gitee', priority: 2 },
+        { name: 'Gitee直连', type: 'gitee', priority: 2 },
         { name: '国内CDN', type: 'cdn', priority: 3, url: 'https://cdn.jsdelivr.net/gh/Jay-Victor/StarWing@latest/' }
     ]
 };
@@ -131,7 +132,7 @@ class UpdateChecker {
     async fetchGiteeRelease() {
         this.logger.info('Fetching release info from Gitee API');
         try {
-            const response = await this.fetchWithTimeout(GITEE_MIRROR_URL, {
+            const response = await this.fetchWithTimeout(GITEE_API_URL, {
                 headers: {
                     'User-Agent': 'StarWing-Updater/1.0'
                 }
@@ -342,8 +343,12 @@ class UpdateDownloader {
                 this.logger.info(`Trying download from ${mirror.name}`);
                 let downloadUrl = releaseInfo.downloadUrl;
 
-                if (mirror.type === 'gitee' && downloadUrl.includes('github.com')) {
-                    downloadUrl = downloadUrl.replace('github.com', 'gitee.com');
+                if (mirror.type === 'gitee') {
+                    if (downloadUrl.includes('github.com')) {
+                        downloadUrl = downloadUrl
+                            .replace('github.com/Jay-Victor/StarWing', 'gitee.com/Jay-Victor/star-wing')
+                            .replace('github.com', 'gitee.com');
+                    }
                 } else if (mirror.type === 'cdn' && mirror.url) {
                     downloadUrl = `${mirror.url}releases/download/v${releaseInfo.version}/${fileName}`;
                 }
