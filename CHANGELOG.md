@@ -12,6 +12,57 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] - 2026-03-12
+
+### Added | 新增
+
+#### 中文
+- ⚡ **增量更新系统** - 解决下载慢问题
+  - 智能差异检测：只下载变化的文件块，大幅减少下载量
+  - 流量节省：平均可节省 50-80% 的下载流量
+  - 多镜像支持：支持 GitHub、Gitee、CDN 多源下载
+  - 断点续传：支持下载中断后继续下载
+  - 自动回退：增量更新失败时自动切换到完整更新
+  - 进度显示：实时显示下载进度、速度和剩余时间
+- 📊 **更新界面优化**
+  - 新增增量更新信息卡片
+  - 显示节省流量百分比
+  - 显示增量大小和完整大小对比
+  - 支持一键切换增量/完整更新模式
+- 🔧 **更新配置增强**
+  - 新增 `deltaUpdateEnabled` 配置项
+  - 新增 `preferDelta` 配置项
+  - 新增 `deltaMinSize` 配置项
+
+#### English
+- ⚡ **Delta Update System** - Solves slow download issue
+  - Smart difference detection: Only download changed file blocks, significantly reducing download size
+  - Bandwidth savings: Average 50-80% download bandwidth savings
+  - Multi-mirror support: Supports GitHub, Gitee, CDN multi-source downloads
+  - Resume download: Supports continuing download after interruption
+  - Auto fallback: Automatically switches to full update when delta update fails
+  - Progress display: Real-time display of download progress, speed, and remaining time
+- 📊 **Update UI Optimization**
+  - Added delta update information card
+  - Displays bandwidth savings percentage
+  - Shows delta size vs full size comparison
+  - Supports one-click toggle between delta/full update mode
+- 🔧 **Update Configuration Enhancement**
+  - Added `deltaUpdateEnabled` configuration option
+  - Added `preferDelta` configuration option
+  - Added `deltaMinSize` configuration option
+
+### Technical Details | 技术细节
+
+| Item | Details |
+|------|---------|
+| Delta Algorithm | SHA256 chunk-based difference detection |
+| Chunk Size | 512 KB (configurable) |
+| Compression | Gzip compression for delta chunks |
+| Mirror Priority | GitHub → Gitee → CDN |
+
+---
+
 ## [1.0.3] - 2026-03-12
 
 ### Changed | 变更
@@ -244,6 +295,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[1.1.0]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.1.0
 [1.0.3]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.0.3
 [1.0.2]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.0.2
 [1.0.1]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.0.1

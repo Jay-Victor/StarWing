@@ -264,7 +264,7 @@ function createMenu() {
                             type: 'info',
                             title: '关于 StarWing',
                             message: 'StarWing - 飞机大战',
-                            detail: '版本: 1.0.3\n作者: Jay-Victor\n\nGitHub: https://github.com/Jay-Victor/StarWing\nGitee:  https://gitee.com/Jay-Victor/star-wing\n\n一款基于HTML5 Canvas的飞机射击游戏，支持键盘、鼠标和手势操控。',
+                            detail: '版本: 1.1.0\n作者: Jay-Victor\n\nGitHub: https://github.com/Jay-Victor/StarWing\nGitee:  https://gitee.com/Jay-Victor/star-wing\n\n一款基于HTML5 Canvas的飞机射击游戏，支持键盘、鼠标和手势操控。\n\n新增增量更新功能，大幅减少更新下载时间！',
                             buttons: ['确定', '访问GitHub', '访问Gitee'],
                             defaultId: 0
                         }).then(result => {

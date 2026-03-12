@@ -41,6 +41,7 @@ StarWing/
 │   ├── preload.js              # 预加载脚本
 │   ├── styles.css              # 样式表
 │   ├── updater.js              # 更新机制模块
+│   ├── deltaUpdater.js         # 增量更新模块 (v1.1.0 新增)
 │   ├── updaterPreload.js       # 更新窗口预加载
 │   └── updaterUI.html          # 更新窗口界面
 ├── .gitignore                  # Git 忽略配置
@@ -110,6 +111,7 @@ StarWing/
 | `preload.js` | 预加载脚本 | ~20 |
 | `styles.css` | 样式表 | ~2200 |
 | `updater.js` | 更新机制 | ~800 |
+| `deltaUpdater.js` | 增量更新模块 (v1.1.0 新增) | ~500 |
 | `updaterPreload.js` | 更新预加载 | ~50 |
 | `updaterUI.html` | 更新界面 | ~200 |
 
@@ -149,9 +151,10 @@ src/
 │   ├── index.html   # 主界面
 │   └── styles.css   # 样式
 ├── 更新模块
-│   ├── updater.js
-│   ├── updaterPreload.js
-│   └── updaterUI.html
+│   ├── updater.js        # 更新管理器
+│   ├── deltaUpdater.js   # 增量更新 (v1.1.0)
+│   ├── updaterPreload.js # 更新预加载
+│   └── updaterUI.html    # 更新界面
 └── 安全模块
     └── preload.js   # 安全桥接
 ```
@@ -247,5 +250,5 @@ releases/
 
 ---
 
-*文档版本: 1.0.0*
-*最后更新: 2026-03-08*
+*文档版本: 1.1.0*
+*最后更新: 2026-03-12*

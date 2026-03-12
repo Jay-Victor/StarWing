@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { URL } = require('url');
+const { DeltaUpdater } = require('./deltaUpdater');
 
 const GITHUB_REPO = 'Jay-Victor/StarWing';
 const GITEE_REPO = 'Jay-Victor/star-wing';
@@ -25,7 +26,10 @@ const UPDATE_CONFIG = {
         { name: 'GitHub', type: 'github', priority: 1 },
         { name: 'Gitee直连', type: 'gitee', priority: 2 },
         { name: '国内CDN', type: 'cdn', priority: 3, url: 'https://cdn.jsdelivr.net/gh/Jay-Victor/StarWing@latest/' }
-    ]
+    ],
+    deltaUpdateEnabled: true,
+    deltaMinSize: 1024 * 1024,
+    preferDelta: true
 };
 
 class UpdateLogger {
@@ -489,10 +493,12 @@ class UpdateManager {
         this.checker = new UpdateChecker(this);
         this.downloader = new UpdateDownloader(this);
         this.backupManager = new BackupManager(this);
+        this.deltaUpdater = new DeltaUpdater(this.logger);
         this.updateWindow = null;
         this.lastCheckTime = null;
         this.checkIntervalId = null;
         this.isUpdating = false;
+        this.deltaUpdateInfo = null;
 
         this.setupIpcHandlers();
         this.loadConfig();
@@ -550,6 +556,16 @@ class UpdateManager {
             return this.lastCheckTime;
         });
 
+        ipcMain.handle('update:check-delta', async (event, currentVersion, targetVersion) => {
+            return await this.checkDeltaUpdate(currentVersion, targetVersion);
+        });
+
+        ipcMain.handle('update:download-delta', async (event, currentVersion, targetVersion) => {
+            return await this.downloadDeltaUpdate(currentVersion, targetVersion, (progress) => {
+                event.sender.send('update:delta-progress', progress);
+            });
+        });
+
         ipcMain.on('update:close', () => {
             if (this.updateWindow && !this.updateWindow.isDestroyed()) {
                 this.updateWindow.close();
@@ -575,10 +591,82 @@ class UpdateManager {
         try {
             const result = await this.checker.checkForUpdates();
             this.lastCheckTime = Date.now();
+            
+            if (result.hasUpdate && UPDATE_CONFIG.deltaUpdateEnabled) {
+                const deltaResult = await this.checkDeltaUpdate(
+                    result.currentVersion, 
+                    result.latestVersion
+                );
+                result.deltaUpdate = deltaResult;
+            }
+            
             return result;
         } catch (error) {
             this.logger.error('Update check failed', { error: error.message });
             throw error;
+        }
+    }
+
+    async checkDeltaUpdate(currentVersion, targetVersion) {
+        if (!UPDATE_CONFIG.deltaUpdateEnabled) {
+            return { available: false, reason: 'delta_disabled' };
+        }
+
+        try {
+            this.logger.info(`Checking delta update: ${currentVersion} -> ${targetVersion}`);
+            
+            const result = await this.deltaUpdater.checkDeltaUpdate(
+                currentVersion,
+                targetVersion,
+                UPDATE_CONFIG.mirrors
+            );
+
+            if (result.available) {
+                this.deltaUpdateInfo = result;
+                this.logger.info('Delta update available', {
+                    savings: result.savings + '%',
+                    deltaSize: result.manifest.deltaSize,
+                    totalSize: result.manifest.totalSize
+                });
+            }
+
+            return result;
+        } catch (error) {
+            this.logger.warn('Delta check failed', { error: error.message });
+            return { available: false, reason: error.message };
+        }
+    }
+
+    async downloadDeltaUpdate(currentVersion, targetVersion, onProgress) {
+        if (!this.deltaUpdateInfo || !this.deltaUpdateInfo.available) {
+            throw new Error('No delta update available');
+        }
+
+        this.isUpdating = true;
+        this.logger.info('Starting delta download');
+
+        try {
+            const result = await this.deltaUpdater.performDeltaUpdate(
+                currentVersion,
+                targetVersion,
+                UPDATE_CONFIG.mirrors,
+                path.join(app.getPath('temp'), 'StarWing-Delta'),
+                onProgress
+            );
+
+            if (result.success) {
+                this.logger.info('Delta update downloaded successfully', {
+                    savings: result.savings + '%',
+                    downloadedSize: result.downloadedSize
+                });
+            }
+
+            return result;
+        } catch (error) {
+            this.logger.error('Delta download failed', { error: error.message });
+            throw error;
+        } finally {
+            this.isUpdating = false;
         }
     }
 
