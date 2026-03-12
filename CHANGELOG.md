@@ -12,6 +12,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.0.3] - 2026-03-12
+
+### Changed | 变更
+
+#### 中文
+- 📝 **UI 文字修正**
+  - 更新界面文字：将"Gitee镜像"改为"Gitee直连"
+  - 统一 README.md 中的镜像源名称
+- 📄 **文档更新**
+  - 修正多镜像下载支持表格中的名称
+
+#### English
+- 📝 **UI Text Correction**
+  - Updated UI text: Changed "Gitee Mirror" to "Gitee Direct"
+  - Unified mirror source names in README.md
+- 📄 **Documentation Update**
+  - Fixed names in multi-mirror download support table
+
+---
+
 ## [1.0.2] - 2026-03-12
 
 ### Changed | 变更
@@ -224,6 +244,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+[1.0.3]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.0.3
 [1.0.2]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.0.2
 [1.0.1]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.0.1
 [1.0.0]: https://github.com/Jay-Victor/StarWing/releases/tag/v1.0.0

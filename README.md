@@ -8,7 +8,7 @@
 
 *支持键盘、鼠标和手势三种操控模式*
 
-[![Version](https://img.shields.io/badge/version-1.0.2-blue.svg)](https://github.com/Jay-Victor/StarWing)
+[![Version](https://img.shields.io/badge/version-1.0.3-blue.svg)](https://github.com/Jay-Victor/StarWing)
 [![License](https://img.shields.io/badge/license-Custom%20Open%20Source-green.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Windows-lightgrey.svg)](https://github.com/Jay-Victor/StarWing)
 [![QQ Group](https://img.shields.io/badge/QQ群-1080243162-orange.svg)](https://qm.qq.com/cgi-bin/qm/qr?k=YOUR_QQ_GROUP_KEY)
@@ -124,7 +124,7 @@ StarWing 内置了完善的自动更新系统，确保您始终使用最新版�
 | 镜像源 | 优先级 | 说明 |
 |--------|--------|------|
 | GitHub | 1 | 官方源，全球可用 |
-| Gitee镜像 | 2 | 国内加速，推荐国内用户 |
+| Gitee直连 | 2 | 国内加速，推荐国内用户 |
 | 国内CDN | 3 | 备用源 |
 
 #### 更新配置
@@ -381,7 +381,7 @@ StarWing includes a comprehensive auto-update system to ensure you always have t
 | Mirror | Priority | Description |
 |--------|----------|-------------|
 | GitHub | 1 | Official source, globally available |
-| Gitee Mirror | 2 | China acceleration, recommended for CN users |
+| Gitee Direct | 2 | China acceleration, recommended for CN users |
 | China CDN | 3 | Backup source |
 
 #### Update Configuration
